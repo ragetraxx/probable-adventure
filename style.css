@@ -1,0 +1,106 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f4; /* Default background color */
+}
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* To contain background image */
+    width: 80%;
+    max-width: 600px; /* Adjust as needed */
+    margin: 20px;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.logo {
+    max-width: 100px; /* Adjust logo size */
+    height: auto;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.game-area {
+    padding: 20px;
+    position: relative; /* For background image positioning */
+    overflow: hidden; /* Clip background image to game area */
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://i.imgur.com/ADlPZWV_d.jpeg'); /* Replace with your background image */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15; /* Adjust opacity for background effect */
+    pointer-events: none; /* Make it non-interactive */
+}
+
+.word-display {
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    border: 2px dashed #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 2em;
+    letter-spacing: 0.2em;
+    border-radius: 8px;
+    position: relative; /* To stack on background */
+    z-index: 1; /* Ensure it's above background */
+}
+
+.input-area, .controls, .message-area {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative; /* To stack on background */
+    z-index: 1; /* Ensure it's above background */
+}
+
+input[type="text"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 70%;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.message-area {
+    font-weight: bold;
+    color: green; /* Default message color */
+    min-height: 20px; /* Ensure space is reserved */
+}
+
+.message-area.error {
+    color: red;
+}
