@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageDisplay = document.getElementById('message');
 
     let words = [];
-    let currentWordObject = null; // Will hold {word: "...", category: "..."}
+    let currentWordObject = null;
     let currentWord = '';
     let scrambledWord = '';
     let hintsRemaining = 5;
-    let hintType = 0; // To cycle through hint types
-    let revealedLetters = []; // To track letters revealed by hints
+    let hintType = 0;
+    let revealedLetters = [];
 
     // Function to fetch words from words.json
     async function loadWords() {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             words = await response.json();
         } catch (error) {
             console.error('Error loading words:', error);
-            words = [{ word: "example", category: "basic" }, { word: "sample", category: "test" }, { word: "testing", category: "code" }]; // Fallback words with categories
+            words = [{ word: "example", category: "basic" }, { word: "sample", category: "test" }, { word: "testing", category: "code" }];
         }
         startGame();
     }
@@ -44,32 +44,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to start a new game
     function startGame() {
-        currentWordObject = chooseWordObject(); // Get word object with category
+        currentWordObject = chooseWordObject();
         currentWord = currentWordObject.word;
         scrambledWord = scrambleWordFunc(currentWord);
 
-        // Ensure scrambled word is different from the original
         if (scrambledWord === currentWord) {
-            scrambledWord = scrambleWordFunc(currentWord); // Scramble again if same
+            scrambledWord = scrambleWordFunc(currentWord);
         }
 
-        scrambledWordDisplay.textContent = scrambledWord;
+        scrambledWordDisplay.textContent = scrambledWord.toUpperCase(); // Display scrambled word in uppercase
         userInput.value = '';
         messageDisplay.textContent = '';
         hintsRemaining = 5;
         hintCountDisplay.textContent = hintsRemaining;
-        hintType = 0; // Reset hint type for new game
-        revealedLetters = []; // Reset revealed letters
+        hintType = 0;
+        revealedLetters = [];
     }
 
     // Function to check the user's answer
     function checkAnswer() {
         const userAnswer = userInput.value.toLowerCase();
         if (userAnswer === currentWord.toLowerCase()) {
-            messageDisplay.textContent = 'Correct! 🎉';
+            messageDisplay.textContent = 'Correct! 🎉'; // Keep "Correct!" as is, or you can uppercase it: 'CORRECT! 🎉'
             messageDisplay.classList.remove('error');
             messageDisplay.classList.add('correct');
-            setTimeout(startGame, 1500); // Start new game after 1.5 seconds
+            setTimeout(startGame, 1500);
         } else {
             messageDisplay.textContent = 'Incorrect, try again! 😔';
             messageDisplay.classList.remove('correct');
@@ -84,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hintCountDisplay.textContent = hintsRemaining;
             let hintText = "";
 
-            switch (hintType % 5) { // Cycle through 5 hint types
+            switch (hintType % 5) {
                 case 0: // First Letter
                     hintText = `Hint ${5 - hintsRemaining}: Starts with "${currentWord.charAt(0).toUpperCase()}..."`;
                     break;
@@ -102,26 +101,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     let letterToReveal = '';
                     let letterIndex = -1;
                     for (let i = 0; i < currentWord.length; i++) {
-                        if (!revealedLetters.includes(i)) { // Find a letter not yet revealed
+                        if (!revealedLetters.includes(i)) {
                             letterToReveal = currentWord[i];
                             letterIndex = i;
-                            revealedLetters.push(i); // Mark as revealed
-                            break; // Reveal only one letter at a time
+                            revealedLetters.push(i);
+                            break;
                         }
                     }
                     if (letterToReveal) {
                         let displayedScrambled = scrambledWord.split('');
-                        displayedScrambled[letterIndex] = letterToReveal.toUpperCase(); // Show in uppercase to distinguish
-                        scrambledWordDisplay.textContent = displayedScrambled.join('');
+                        displayedScrambled[letterIndex] = letterToReveal.toUpperCase();
+                        scrambledWordDisplay.textContent = displayedScrambled.join('').toUpperCase(); // Keep scrambled word display always uppercase
                         hintText = `Hint ${5 - hintsRemaining}: Letter '${letterToReveal.toUpperCase()}' is at position ${letterIndex + 1}.`;
                     } else {
-                        hintText = "Hint: No more letters to reveal."; // Should not happen usually, but as fallback
+                        hintText = "Hint: No more letters to reveal.";
                     }
                     break;
             }
             messageDisplay.textContent = hintText;
             messageDisplay.classList.remove('error');
-            hintType++; // Move to the next hint type for the next hint request
+            hintType++;
 
         } else {
             messageDisplay.textContent = 'No more hints left! 😞';
@@ -135,9 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scrambleButton.addEventListener('click', () => {
         scrambledWord = scrambleWordFunc(currentWord);
-        scrambledWordDisplay.textContent = scrambledWord;
-        messageDisplay.textContent = ''; // Clear any messages
-        revealedLetters = []; // Reset revealed letters on scramble
+        scrambledWordDisplay.textContent = scrambledWord.toUpperCase(); // Display scrambled word in uppercase after scramble
+        messageDisplay.textContent = '';
+        revealedLetters = [];
     });
 
     hintButton.addEventListener('click', getHint);
