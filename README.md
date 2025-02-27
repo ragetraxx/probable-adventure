@@ -21,3 +21,7 @@ This is a simple and engaging Text Twist game built using HTML, CSS, and JavaScr
 *   **CSS:**  Styling and visual presentation of the game.
 *   **JavaScript:**  Game logic, word scrambling, hint system, answer checking, and dynamic updates.
 *   **JSON:**  `words.json` file to store the list of words for the game.
+
+## Credits
+
+This game was created as a demonstration of a simple Text Twist game using HTML, CSS, and JavaScript.
