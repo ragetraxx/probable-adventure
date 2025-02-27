@@ -7,10 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const hintCountDisplay = document.getElementById('hint-count');
     const messageDisplay = document.getElementById('message');
 
-    // Get references to the new HTML elements
+    // Get references to the new HTML elements and Pass button
     const correctImagePopup = document.getElementById('correct-image-popup');
     const clapSound = document.getElementById('clap-sound');
     const failSound = document.getElementById('fail-sound');
+    const passButton = document.getElementById('pass-button'); // New Pass Button
 
     let words = [];
     let currentWordObject = null;
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return wordArray.join('');
     }
 
-    // Function to start a new game
+    // Function to start a new game (No changes needed in startGame function for basic pass feature)
     function startGame() {
         currentWordObject = chooseWordObject();
         currentWord = currentWordObject.word;
@@ -67,6 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         correctImagePopup.style.display = 'none'; // Hide the correct image at start of each game
     }
+
+
+    // Function to handle passing the word
+    function passWord() {
+        messageDisplay.textContent = 'Word Skipped!'; // Optional: Feedback message for passing
+        messageDisplay.classList.remove('correct', 'error'); // Remove any previous message classes
+        startGame(); // Immediately start a new game with a new word
+    }
+
 
     // Function to check the user's answer
     function checkAnswer() {
@@ -147,12 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scrambleButton.addEventListener('click', () => {
         scrambledWord = scrambleWordFunc(currentWord);
-        scrambledWordDisplay.textContent = scrambledWord.toUpperCase(); // Display scrambled word in uppercase after scramble
+        scrambledWordDisplay.textContent = scrambledWord.toUpperCase();
         messageDisplay.textContent = '';
         revealedLetters = [];
     });
 
     hintButton.addEventListener('click', getHint);
+
+    passButton.addEventListener('click', passWord); // Event listener for Pass button
 
     // Initial word loading and game start
     loadWords();
