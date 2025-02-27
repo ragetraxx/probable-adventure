@@ -8,9 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageDisplay = document.getElementById('message');
 
     let words = [];
+    let currentWordObject = null; // Will hold {word: "...", category: "..."}
     let currentWord = '';
     let scrambledWord = '';
     let hintsRemaining = 5;
+    let hintType = 0; // To cycle through hint types
+    let revealedLetters = []; // To track letters revealed by hints
 
     // Function to fetch words from words.json
     async function loadWords() {
@@ -19,13 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
             words = await response.json();
         } catch (error) {
             console.error('Error loading words:', error);
-            words = ["example", "sample", "testing"]; // Fallback words
+            words = [{ word: "example", category: "basic" }, { word: "sample", category: "test" }, { word: "testing", category: "code" }]; // Fallback words with categories
         }
         startGame();
     }
 
-    // Function to choose a random word
-    function chooseWord() {
+    // Function to choose a random word object
+    function chooseWordObject() {
         return words[Math.floor(Math.random() * words.length)];
     }
 
@@ -41,7 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to start a new game
     function startGame() {
-        currentWord = chooseWord();
+        currentWordObject = chooseWordObject(); // Get word object with category
+        currentWord = currentWordObject.word;
         scrambledWord = scrambleWordFunc(currentWord);
 
         // Ensure scrambled word is different from the original
@@ -54,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDisplay.textContent = '';
         hintsRemaining = 5;
         hintCountDisplay.textContent = hintsRemaining;
+        hintType = 0; // Reset hint type for new game
+        revealedLetters = []; // Reset revealed letters
     }
 
     // Function to check the user's answer
@@ -62,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userAnswer === currentWord.toLowerCase()) {
             messageDisplay.textContent = 'Correct! 🎉';
             messageDisplay.classList.remove('error');
-            messageDisplay.classList.add('correct'); // Add 'correct' class if you want specific styling
+            messageDisplay.classList.add('correct');
             setTimeout(startGame, 1500); // Start new game after 1.5 seconds
         } else {
             messageDisplay.textContent = 'Incorrect, try again! 😔';
@@ -76,14 +82,53 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hintsRemaining > 0) {
             hintsRemaining--;
             hintCountDisplay.textContent = hintsRemaining;
-            const hint = currentWord.charAt(0); // First letter hint
-            messageDisplay.textContent = `Hint: The word starts with "${hint.toUpperCase()}..."`;
+            let hintText = "";
+
+            switch (hintType % 5) { // Cycle through 5 hint types
+                case 0: // First Letter
+                    hintText = `Hint ${5 - hintsRemaining}: Starts with "${currentWord.charAt(0).toUpperCase()}..."`;
+                    break;
+                case 1: // Word Length
+                    hintText = `Hint ${5 - hintsRemaining}: The word has ${currentWord.length} letters.`;
+                    break;
+                case 2: // Category
+                    hintText = `Hint ${5 - hintsRemaining}: Category is "${currentWordObject.category}".`;
+                    break;
+                case 3: // Vowel Count
+                    const vowels = currentWord.toLowerCase().match(/[aeiou]/g) || [];
+                    hintText = `Hint ${5 - hintsRemaining}: It has ${vowels.length} vowels.`;
+                    break;
+                case 4: // Reveal a Letter
+                    let letterToReveal = '';
+                    let letterIndex = -1;
+                    for (let i = 0; i < currentWord.length; i++) {
+                        if (!revealedLetters.includes(i)) { // Find a letter not yet revealed
+                            letterToReveal = currentWord[i];
+                            letterIndex = i;
+                            revealedLetters.push(i); // Mark as revealed
+                            break; // Reveal only one letter at a time
+                        }
+                    }
+                    if (letterToReveal) {
+                        let displayedScrambled = scrambledWord.split('');
+                        displayedScrambled[letterIndex] = letterToReveal.toUpperCase(); // Show in uppercase to distinguish
+                        scrambledWordDisplay.textContent = displayedScrambled.join('');
+                        hintText = `Hint ${5 - hintsRemaining}: Letter '${letterToReveal.toUpperCase()}' is at position ${letterIndex + 1}.`;
+                    } else {
+                        hintText = "Hint: No more letters to reveal."; // Should not happen usually, but as fallback
+                    }
+                    break;
+            }
+            messageDisplay.textContent = hintText;
             messageDisplay.classList.remove('error');
+            hintType++; // Move to the next hint type for the next hint request
+
         } else {
             messageDisplay.textContent = 'No more hints left! 😞';
             messageDisplay.classList.add('error');
         }
     }
+
 
     // Event listeners
     submitButton.addEventListener('click', checkAnswer);
@@ -92,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrambledWord = scrambleWordFunc(currentWord);
         scrambledWordDisplay.textContent = scrambledWord;
         messageDisplay.textContent = ''; // Clear any messages
+        revealedLetters = []; // Reset revealed letters on scramble
     });
 
     hintButton.addEventListener('click', getHint);
